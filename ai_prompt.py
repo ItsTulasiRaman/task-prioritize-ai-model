@@ -12,6 +12,6 @@ def input_text_update(textPrompt):
     inputText = textPrompt + ". From the list of above todo important tasks orderwise. Display all sorted task within an array format [task1,task2]"
     content = bard.get_answer(inputText)['content']
     content = content.split('```')[1]
-    return content.split(',')
+    return content.split(',')[0]
 
 #print(generate_prompt())
