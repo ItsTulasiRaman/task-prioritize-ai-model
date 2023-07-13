@@ -1,19 +1,25 @@
-from flask import Flask, Response, jsonify
-from ai_prompt import generate_prompt,input_text_update
+from flask import Flask, request, jsonify
+import openai
 
 app = Flask(__name__)
+openai.api_key = "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"
 
+@app.route('/askgpt', methods=['POST'])
+def ask_gpt():
+    message = request.form.get('Message')
 
-@app.route("/usage/api/prompt")
-def index():
-    return Response (generate_prompt(),status=200)
+    completion = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a task manager. Prioritize the tasks in terms of importance"},
+            {"role": "user", "content": message}
+        ]
+    )
 
+    generated_message = completion.choices[0].message['content']
+    generated_message = generated_message.encode().decode('unicode_escape')
 
-@app.route("/usage/api/prompt/update/<input>",methods=['POST'])
-def update(input):
-    return Response(input_text_update(input),status=200)
-
-
+    return jsonify({'message': generated_message})
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0')
